@@ -4,7 +4,7 @@ Historical research: ERA5 2022–2025, trained model saved in models/.
 Practical live planner: Open-Meteo forecast, with opt-in experimental ML.
 
 Run from the SunPilot-AI project folder:
-        python sunpilot_desktop_v1.py
+        python sunpilot_desktop_v054.py
 
 No Gradio or browser. Windows programs are scheduled only after user confirmation.
 """
@@ -65,6 +65,8 @@ from PySide6.QtWidgets import (
 # Standalone pure-Python planning engine — also used by unit tests.
 from src.windows_scheduler import register_launch, list_launches, cancel_launch
 
+from src.solar_time import historical_day
+
 from src.live_planner import (
     Location, Forecast, geocode_city, location_from_ip, fetch_forecast,
     build_plan, minute_window, best_historical_start, historical_energy,
@@ -110,7 +112,7 @@ def feature_frame(frame: pd.DataFrame) -> pd.DataFrame:
     df = df.sort_values("time_utc").reset_index(drop=True)
     local = df["time_utc"].dt.tz_convert("Europe/Stockholm")
     hour = local.dt.hour
-    day = local.dt.dayofyear
+    day = local.dt.day_of_year
     df["local_date"] = local.dt.strftime("%Y-%m-%d")
     df["local_hour"] = hour
     df["hour_sin"] = np.sin(2 * np.pi * hour / 24)
@@ -1392,7 +1394,12 @@ class SunPilotApp(QMainWindow):
             "Explore the historical simulator",
             "Choose a day from 2024–2025 to see what the trained AI would have decided.",
         ))
-        self.hist_date = NoWheelDateEdit(QDate(2025, 8, 26))
+        # Default to the verified worst case once corrected 2025 metrics exist.
+        worst_date = ((self.scheduler_metrics or {}).get("test_2025", {})
+                      .get("worst_day_vs_yesterday"))
+        worst_qdate = QDate.fromString(worst_date or "", "yyyy-MM-dd")
+        default_day = worst_qdate if worst_qdate.isValid() and (self.scheduler_metrics or {}).get("evaluation_version") == 2 else QDate(2025, 8, 26)
+        self.hist_date = NoWheelDateEdit(default_day)
         self.hist_date.setDisplayFormat("yyyy-MM-dd")
         self.hist_date.setCalendarPopup(True)
         self.hist_date.setDateRange(QDate(2024, 1, 1), QDate(2025, 12, 31))
@@ -1431,7 +1438,7 @@ class SunPilotApp(QMainWindow):
             "Predictions versus historical reference", "Blue: ERA5 reanalysis · amber: SunPilot ML · dashed: previous-day baseline")
         page.addWidget(chart)
         comparison = Card()
-        comparison.body.addWidget(label("What the historical day actually delivered", "cardTitle"))
+        comparison.body.addWidget(label("Historical ERA5 reference results", "cardTitle"))
         comparison.body.addWidget(label("Each row is scored using the same ERA5 reference values; perfect knowledge is unattainable.", "muted"))
         self.hist_table = data_table()
         comparison.body.addWidget(self.hist_table)
@@ -1449,7 +1456,11 @@ class SunPilotApp(QMainWindow):
         page.addWidget(page_heading(
             "Research & results", "What we tested, what worked, and where this prototype still needs evidence.",
         ))
-        test = (self.scheduler_metrics or {}).get("test_2025", {})
+        # Old v1.0 metrics used 08–17 hour-end labels. Never silently show
+        # pre-correction values after installing the new evaluator.
+        is_recalculated = ((self.scheduler_metrics or {}).get("hour_label_semantics") == "hour_end"
+                           and (self.scheduler_metrics or {}).get("evaluation_version") == 2)
+        test = (self.scheduler_metrics or {}).get("test_2025", {}) if is_recalculated else {}
         forecast = (self.prediction_metrics or {}).get("test_2025", {})
         ai_mae = forecast.get("ai", {}).get("mae_all_w_m2")
         baseline_mae = forecast.get("baseline", {}).get("mae_all_w_m2")
@@ -1465,6 +1476,11 @@ class SunPilotApp(QMainWindow):
                        "Held-out 2025 scheduling test", BLUE),
         ]
         page.addWidget(ResponsiveMetrics(metric_cards))
+        if not is_recalculated:
+            page.addWidget(label(
+                "Scheduling benchmark pending corrected evaluation: run python src/scheduler.py "
+                "before quoting any historical scheduling gains. The previous values used a "
+                "one-hour misalignment.", "notice"))
         question = Card()
         question.body.addWidget(label("The question", "cardTitle"))
         question.body.addWidget(label(
@@ -1500,12 +1516,37 @@ class SunPilotApp(QMainWindow):
             numbers.body.addWidget(label("Saved benchmark data not found. Run src/scheduler.py to generate it."))
         page.addWidget(numbers)
 
+        # A measured carbon benefit cannot be inferred from irradiance. Show a
+        # hypothetical rooftop-PV user scenario ONLY after a corrected audit.
+        pv_scenario = test.get("pv_scenario_mean_kwh", {}) if is_recalculated else {}
+        if pv_scenario:
+            scenario = Card()
+            scenario.body.addWidget(label("Illustrative rooftop PV scenario · NOT measured", "cardTitle"))
+            scenario.body.addWidget(label(
+                "Assumptions: 4 m² horizontal panels, nominal efficiency 20%, "
+                "300 W computer, no batteries, shading or other loads. "
+                "Potential solar-powered share of a 2-hour workload; "
+                "not PV meter data or avoided CO₂.", "muted"))
+            for name in ("SunPilot AI", "Yesterday", "Fixed 12:00"):
+                if name in pv_scenario:
+                    line = QHBoxLayout()
+                    line.addWidget(label(name, "muted"), 2)
+                    result = label(f"{pv_scenario[name]:.3f} kWh / task", "resultLead")
+                    result.setAlignment(Qt.AlignmentFlag.AlignRight)
+                    line.addWidget(result, 1)
+                    scenario.body.addLayout(line)
+            page.addWidget(scenario)
+
         finding = Card()
         finding.body.addWidget(label("The honest conclusion", "cardTitle"))
         finding.body.addWidget(label(
             "In the historical held-out test, the AI reduced prediction error relative to a "
             "previous-day baseline. It beat yesterday-based scheduling but did not beat a fixed "
             "noon schedule. Better predictions do not necessarily lead to better decisions."))
+        finding.body.addWidget(label(
+            "The historical evaluation now aligns hour-end radiation labels with real task start "
+            "times (e.g. 09:00 radiation describes 08:00–09:00). Results must be "
+            "regenerated with the corrected evaluator before interpretation.", "muted"))
         finding.body.addWidget(label(
             "The live planner is a separate experimental deployment: its inputs may be forecast-model "
             "estimates rather than the ERA5 data used in training. It has not yet been validated "
@@ -1517,6 +1558,8 @@ class SunPilotApp(QMainWindow):
         sources.body.addWidget(label(
             "Weather: Open-Meteo historical ERA5 reanalysis and forecast API. "
             "AI development assistance: ChatGPT. "
+            "The intended user is someone with rooftop solar and a flexible computing job. "
+            "Historical solar irradiation is a proxy, not proof of solar self-consumption. "
             "No measured PV power, financial savings, or verified carbon reduction. "
             "Historical research location: Klippan, Sweden. Live planning supports user-chosen locations. "
             "The historical one-day experiment uses the 08:00–18:00 evaluation window. "
@@ -1614,11 +1657,10 @@ class SunPilotApp(QMainWindow):
                     "Historical research uses one 08:00–18:00 day (maximum 10 hours). "
                     "For long tasks, use Plan a task instead."
                 )
-            slice_ = self.history[(self.history["local_date"] == day) &
-                                  self.history["local_hour"].between(FIRST_HOUR, LAST_HOUR - 1)]
-            slice_ = slice_.sort_values("local_hour")
-            if slice_["local_hour"].tolist() != list(range(FIRST_HOUR, LAST_HOUR)):
-                raise ValueError("This day has incomplete historical solar data.")
+            # Hourly shortwave_radiation is averaged over the preceding hour.
+            # To evaluate a true 08:00–18:00 job window, use end-hour labels
+            # 09:00–18:00. Identical selection is used in src/scheduler.py.
+            slice_ = historical_day(self.history, day)
             actual = slice_["shortwave_radiation"].to_numpy(dtype=float)
             ai = slice_["ai_prediction"].to_numpy(dtype=float)
             previous = slice_["radiation_lag_24"].to_numpy(dtype=float)

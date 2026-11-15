@@ -1,4 +1,4 @@
-﻿"""Regression tests: missing radiation data near end of forecast horizon."""
+"""Regression tests: missing radiation data near end of forecast horizon."""
 from __future__ import annotations
 
 import sys
@@ -89,4 +89,3 @@ def test_download_accepts_missing_forecast_tail(monkeypatch):
     forecast = fetch_forecast(Location("Klippan", 56.13, 13.13))
     assert len(forecast.hourly) == len(times)
     assert forecast.hourly["shortwave_radiation"].isna().sum() == 42
-

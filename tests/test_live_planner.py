@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 from pathlib import Path
@@ -90,7 +90,7 @@ def test_fetch_forecast_unix_timestamps(monkeypatch):
         calls.append((url,params,timeout))
         return Response()
     monkeypatch.setattr(l.requests,'get',get)
-    fc=l.fetch_forecast(Location('MalmÃ¶',55.6,13.,'Europe/Stockholm'))
+    fc=l.fetch_forecast(Location('Malmö',55.6,13.,'Europe/Stockholm'))
     assert fc.timezone == 'Europe/Stockholm'
     assert str(fc.hourly.index.tz) == 'UTC'
     assert calls[0][1]['forecast_days']==16
@@ -99,7 +99,7 @@ def test_fetch_forecast_unix_timestamps(monkeypatch):
 
 def test_location_ip_explicit_call_only(monkeypatch):
     import src.live_planner as l
-    data={'success':True,'city':'GÃ¶teborg','country':'Sweden','latitude':57.7,'longitude':11.9,'timezone':{'id':'Europe/Stockholm'}}
+    data={'success':True,'city':'Göteborg','country':'Sweden','latitude':57.7,'longitude':11.9,'timezone':{'id':'Europe/Stockholm'}}
     class Response:
         def raise_for_status(self):return None
         def json(self): return data
@@ -109,7 +109,6 @@ def test_location_ip_explicit_call_only(monkeypatch):
         return Response()
     monkeypatch.setattr(l.requests,'get',get)
     place=l.location_from_ip()
-    assert place.name.startswith('GÃ¶teborg')
+    assert place.name.startswith('Göteborg')
     assert place.timezone=='Europe/Stockholm'
     assert requests == [l.IP_URL]
-

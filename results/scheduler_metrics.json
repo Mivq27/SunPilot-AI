@@ -2,32 +2,86 @@
   "validation_2024": {
     "days": 366,
     "mean_wh_m2": {
-      "Fixed 12:00": 669.893,
-      "Yesterday": 651.44,
+      "Fixed 12:00": 673.828,
+      "Yesterday": 651.956,
       "SunPilot AI": 663.833,
-      "Perfect knowledge": 724.161
+      "Perfect knowledge": 724.09
     },
-    "ai_gain_vs_fixed_percent": -0.905,
-    "ai_gain_vs_yesterday_percent": 1.902,
-    "ai_wins_vs_fixed_percent": 29.235,
-    "ai_wins_vs_yesterday_percent": 30.601,
-    "worst_day_vs_yesterday": "2024-06-09"
+    "ai_gain_vs_fixed_percent": -1.483,
+    "ai_gain_vs_yesterday_percent": 1.822,
+    "ai_gain_vs_fixed_ci95_percent": [
+      -2.555,
+      -0.428
+    ],
+    "ai_gain_vs_yesterday_ci95_percent": [
+      0.114,
+      3.706
+    ],
+    "ai_vs_fixed_day_results": {
+      "ai_better_pct": 31.148,
+      "ai_equal_pct": 39.071,
+      "ai_worse_pct": 29.781
+    },
+    "ai_vs_yesterday_day_results": {
+      "ai_better_pct": 30.601,
+      "ai_equal_pct": 42.623,
+      "ai_worse_pct": 26.776
+    },
+    "worst_day_vs_yesterday": "2024-06-09",
+    "worst_day_vs_yesterday_wh_m2": -347.0,
+    "pv_scenario_mean_kwh": {
+      "SunPilot AI": 0.397119,
+      "Yesterday": 0.392048,
+      "Fixed 12:00": 0.396321
+    }
   },
   "test_2025": {
     "days": 365,
     "mean_wh_m2": {
-      "Fixed 12:00": 673.008,
-      "Yesterday": 662.058,
+      "Fixed 12:00": 681.17,
+      "Yesterday": 661.649,
       "SunPilot AI": 671.808,
-      "Perfect knowledge": 727.449
+      "Perfect knowledge": 727.753
     },
-    "ai_gain_vs_fixed_percent": -0.178,
-    "ai_gain_vs_yesterday_percent": 1.473,
-    "ai_wins_vs_fixed_percent": 27.945,
-    "ai_wins_vs_yesterday_percent": 30.685,
-    "worst_day_vs_yesterday": "2025-08-26"
+    "ai_gain_vs_fixed_percent": -1.374,
+    "ai_gain_vs_yesterday_percent": 1.535,
+    "ai_gain_vs_fixed_ci95_percent": [
+      -2.408,
+      -0.377
+    ],
+    "ai_gain_vs_yesterday_ci95_percent": [
+      0.126,
+      2.982
+    ],
+    "ai_vs_fixed_day_results": {
+      "ai_better_pct": 32.055,
+      "ai_equal_pct": 38.904,
+      "ai_worse_pct": 29.041
+    },
+    "ai_vs_yesterday_day_results": {
+      "ai_better_pct": 30.685,
+      "ai_equal_pct": 45.479,
+      "ai_worse_pct": 23.836
+    },
+    "worst_day_vs_yesterday": "2025-08-26",
+    "worst_day_vs_yesterday_wh_m2": -593.0,
+    "pv_scenario_mean_kwh": {
+      "SunPilot AI": 0.404945,
+      "Yesterday": 0.403678,
+      "Fixed 12:00": 0.405585
+    }
   },
   "task_duration_hours": 2,
-  "operating_window": "08:00-18:00 Europe/Stockholm",
-  "note": "Historical backtest using observed irradiation. This does not measure actual PV energy or CO2 savings."
+  "operating_window": "08:00–18:00 Europe/Stockholm actual job-time",
+  "hour_label_semantics": "hour_end",
+  "hour_end_labels": "09:00–18:00 local inclusive",
+  "evaluation_version": 2,
+  "uncertainty_note": "Paired day bootstrap CI is descriptive; serial and seasonal correlation remain.",
+  "pv_scenario": {
+    "panel_area_m2": 4.0,
+    "nominal_efficiency": 0.2,
+    "computing_load_w": 300.0,
+    "note": "ILLUSTRATIVE horizontal-panel potential; NOT measured power, PV output or CO2 savings."
+  },
+  "note": "ERA5 historical reanalysis + saved held-out model predictions. Oracle uses actual solar data only to evaluate decisions."
 }

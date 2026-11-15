@@ -127,8 +127,15 @@ def fetch_forecast(location: Location) -> Forecast:
     df = df[~df.index.duplicated(keep="last")].sort_index()
     if len(df) < 168 + 24:
         raise ValueError("The forecast did not include enough past hourly data")
+    # Real providers can omit a few entire hourly rows. Make the missing
+    # positions explicit (NaN) and let the scheduler reject just those
+    # intervals; never treat non-consecutive observations as adjacent hours.
     if not bool((df.index.to_series().diff().dropna() == pd.Timedelta(hours=1)).all()):
-        raise ValueError("Forecast contains gaps in the hourly timeline")
+        if (df.index.minute != 0).any() or (df.index.second != 0).any():
+            raise ValueError("Forecast timestamps are not aligned to whole hours")
+        expected_hours = pd.date_range(df.index[0], df.index[-1], freq="h", tz="UTC")
+        df = df.reindex(expected_hours)
+        df.index.name = "time_utc"
     # Forecast models can stop supplying particular variables before the
     # requested 16-day horizon. Missing tail hours are normal: keep them as
     # missing and let the scheduler consider only complete task windows.
@@ -142,7 +149,7 @@ def predict_ai_hourly(forecast: Forecast, model) -> tuple[np.ndarray, np.ndarray
     frame = forecast.hourly
     loc = frame.index.tz_convert(forecast.timezone)
     hour = loc.hour.to_numpy()
-    doy = loc.dayofyear.to_numpy()
+    doy = loc.day_of_year.to_numpy()
     features = pd.DataFrame(index=frame.index)
     features["hour_sin"] = np.sin(2 * np.pi * hour / 24)
     features["hour_cos"] = np.cos(2 * np.pi * hour / 24)
