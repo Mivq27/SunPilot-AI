@@ -8,7 +8,7 @@ simulator and a usable forecast-based planning mode. It recommends when to run
 flexible workloads such as rendering or Python scripts to coincide with higher
 forecast solar irradiance. **It does not execute programs automatically.**
 
-## Desktop v0.5 — what's new
+## Desktop v0.5.2 — what's new
 
 - **Choose any location** by searching for a city (Open-Meteo Geocoding API),
   entering latitude and longitude, or explicitly requesting an **approximate**
@@ -22,7 +22,16 @@ forecast solar irradiance. **It does not execute programs automatically.**
   minute-resolution forecast.
 - Select either the **Open-Meteo forecast** (default, practical choice) or the
   **SunPilot ML experiment** (not live-validated).
-- UI with adaptive scrolling, plots, explanations and comparisons.
+- **Scroll-safe duration inputs:** the mouse wheel scrolls the page instead of
+  silently changing the selected hours or minutes. The same applies to dates,
+  coordinates and dropdowns (unless their menu is expanded).
+- **More comfortable scrolling:** wheel animations, native touchpad deltas,
+  graphs and tables that let the page scroll, and responsive columns.
+- **Simplified interface:** compact location display, optional location editor,
+  hidden coordinates and scheduling-method controls until requested, and
+  Copy shown only after a recommendation exists.
+- **Forecast-tail fix (v0.5.1):** incomplete weather hours at the end of a
+  forecast no longer invalidate earlier usable planning windows.
 - Historical single-day simulator supports minutes for jobs that fit the
   original **08:00–18:00** evaluation window. This research constraint is
   separate from the unrestricted-duration live planner.
@@ -34,9 +43,8 @@ Tested with Python 3.13 on Windows 11.
 ```powershell
 cd "$env:USERPROFILE\Projects\SunPilot-AI"
 py -3.13 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m pip install PySide6 tzdata
-.\.venv\Scripts\python.exe .\sunpilot_desktop_v05.py
+.\.venv\Scripts\python.exe -m pip install -r requirements-desktop.txt
+.\.venv\Scripts\python.exe .\sunpilot_desktop_v052.py
 ```
 
 The repository includes `models/sunpilot_v1.joblib` and
@@ -48,10 +56,12 @@ works offline.
 
 1. Open **Plan a task**. The initial location is Klippan, Sweden unless you
    have saved another location.
-2. Enter a city in the search box and pick a match, or use coordinates.
-   **Approximate my location** is an optional opt-in public-IP lookup.
+2. Click **Change location** to search a city or opt in to approximate
+   location by public IP. Coordinates are available under **Enter coordinates**.
 3. Choose your task, start range, and duration in hours and minutes.
-4. Click **Find best time** to retrieve a forecast and compare methods.
+   Scroll with the mouse wheel without accidentally changing the inputs.
+4. Click **Find best time** to retrieve a forecast. Weather forecast is the
+   default; **Advanced settings** offers the experimental ML option.
 5. Copy the recommendation if desired. No program is launched automatically.
 
 Local location preferences are saved in Windows QSettings. When you select
@@ -60,11 +70,21 @@ public IP to that provider. City lookup sends the search terms to Open-Meteo;
 forecast lookup sends the selected coordinates to Open-Meteo. No IP lookup is
 triggered at startup.
 
+### Validation
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q .\tests\test_live_planner.py .\tests\test_forecast_horizon.py
+```
+
+13 planning-engine tests passed during preparation. The graphical interface
+must be checked on Windows (especially wheel behavior and resizing): it could
+not be visually launched in the development environment used for this patch.
+
 ### Build Windows app (.exe)
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install pyinstaller tzdata
-powershell -ExecutionPolicy Bypass -File .\build_sunpilot_v05.ps1
+powershell -ExecutionPolicy Bypass -File .\build_sunpilot_v052.ps1
 .\dist\SunPilotAI\SunPilotAI.exe
 ```
 
@@ -115,6 +135,15 @@ simulations; the saved aggregate benchmark remains for two-hour tasks only.
 .\.venv\Scripts\python.exe .\src\train.py
 .\.venv\Scripts\python.exe .\src\scheduler.py
 ```
+
+## Interface and accessibility
+
+The desktop UI has three pages: **Plan a task**, **Simulator** and **Results**.
+In Plan a task, location and advanced scientific controls are collapsed by
+initial default to keep the interface uncluttered. All fields still support
+keyboard input, and mouse-wheel movement over spinboxes, dates and dropdowns
+will no longer modify their values unexpectedly. On small screens the page
+scrolls vertically instead of clipping the controls.
 
 ## Limitations and transparency
 
