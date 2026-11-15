@@ -4,7 +4,8 @@
 **Veritas AI International High School Hackathon 2026 · AI + Climate**
 
 [Download tested Windows v1.1](https://github.com/Mivq27/SunPilot-AI/releases/tag/v1.1) · [Source](https://github.com/Mivq27/SunPilot-AI)
-*Previous Version* [SunPilot-AI v1.0](https://github.com/Mivq27/SunPilot-AI/releases/tag/v1.1)
+
+*Previous Version* [SunPilot-AI v1.0](https://github.com/Mivq27/SunPilot-AI/releases/tag/v1.0)
 
 > **Scientific audit update (candidate v1.1):** The original v1.0 historical scheduling evaluation used hour-end radiation values as if they marked the *start* of each hour. This package corrects that one-hour offset in both the simulator and offline backtest. **The original v1.0 scheduling percentages have been superseded by the re-evaluated v1.1 results below.** We do not retroactively modify or delete the original release; it remains available for reproducibility.
 
