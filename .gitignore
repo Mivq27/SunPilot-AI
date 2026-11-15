@@ -29,3 +29,27 @@ dist/
 *.log
 .DS_Store
 Thumbs.db
+
+# Virtual environments
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Packaging
+build/
+dist/
+*.spec
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Temporary files
+*.log
+.DS_Store
+Thumbs.db
