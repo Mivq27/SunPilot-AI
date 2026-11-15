@@ -1,0 +1,33 @@
+{
+  "validation_2024": {
+    "days": 366,
+    "mean_wh_m2": {
+      "Fixed 12:00": 669.893,
+      "Yesterday": 651.44,
+      "SunPilot AI": 663.833,
+      "Perfect knowledge": 724.161
+    },
+    "ai_gain_vs_fixed_percent": -0.905,
+    "ai_gain_vs_yesterday_percent": 1.902,
+    "ai_wins_vs_fixed_percent": 29.235,
+    "ai_wins_vs_yesterday_percent": 30.601,
+    "worst_day_vs_yesterday": "2024-06-09"
+  },
+  "test_2025": {
+    "days": 365,
+    "mean_wh_m2": {
+      "Fixed 12:00": 673.008,
+      "Yesterday": 662.058,
+      "SunPilot AI": 671.808,
+      "Perfect knowledge": 727.449
+    },
+    "ai_gain_vs_fixed_percent": -0.178,
+    "ai_gain_vs_yesterday_percent": 1.473,
+    "ai_wins_vs_fixed_percent": 27.945,
+    "ai_wins_vs_yesterday_percent": 30.685,
+    "worst_day_vs_yesterday": "2025-08-26"
+  },
+  "task_duration_hours": 2,
+  "operating_window": "08:00-18:00 Europe/Stockholm",
+  "note": "Historical backtest using observed irradiation. This does not measure actual PV energy or CO2 savings."
+}
