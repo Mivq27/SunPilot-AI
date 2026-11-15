@@ -4,7 +4,7 @@ Historical research: ERA5 2022–2025, trained model saved in models/.
 Practical live planner: Open-Meteo forecast, with opt-in experimental ML.
 
 Run from the SunPilot-AI project folder:
-        python sunpilot_desktop_v054.py
+        python sunpilot_desktop_v1.py
 
 No Gradio or browser. Windows programs are scheduled only after user confirmation.
 """

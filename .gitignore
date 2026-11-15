@@ -1,55 +1,34 @@
-﻿.venv/
-__pycache__/
-.pytest_cache/
-*.pyc
-.env
-data/*.csv
-models/*.joblib
-
-# Virtual environments
+# Python and virtual environments
 .venv/
 venv/
-
-# Python
 __pycache__/
 *.pyc
 .pytest_cache/
 
-# Packaging
-build/
-dist/
-*.spec
-
-# Secrets and local configuration
+# Local configuration and system files
 .env
 .env.*
 !.env.example
-
-# Temporary files
 *.log
 .DS_Store
 Thumbs.db
 
-# Virtual environments
-.venv/
-venv/
-
-# Python
-__pycache__/
-*.pyc
-.pytest_cache/
-
-# Packaging
+# Build output (distributed via GitHub Releases instead)
 build/
 dist/
 *.spec
+/*.zip
 
-# Secrets and local configuration
-.env
-.env.*
-!.env.example
+# Local drafts and archived pre-v1 versions
+/sunpilot_desktop_v0*.py
+/sunpilot_desktop_v2.py
+/build_sunpilot_v0*.ps1
+/FIX_*.txt
+/UI_*_README.md
+/src/*_backup.py
 
-# Temporary files
-*.log
-.DS_Store
-Thumbs.db
+# Regenerable datasets and experiment tables
+/data/*.csv
+/models/*.joblib
+/results/*_predictions_*.csv
+/results/schedule_evaluation_*.csv

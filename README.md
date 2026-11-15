@@ -8,7 +8,7 @@ simulator and a usable forecast-based planning mode. It recommends when to run
 flexible workloads such as rendering or Python scripts to coincide with higher
 forecast solar irradiance. **It can optionally launch a user-chosen Windows `.exe` at a confirmed, one-time schedule using Windows Task Scheduler.**
 
-## Desktop v1.0 — release candidate
+## Desktop v1.0
 
 - **Optional Windows automation:** choose a trusted `.exe`, use SunPilot's suggested time or manually choose a local date/time, confirm, and schedule it once with Windows Task Scheduler. View and cancel schedules from the app. **Nothing runs until you opt in.**
 - **Simplified planner:** removed Task type (it never changed the numerical forecast or scheduling decision).
@@ -40,9 +40,11 @@ forecast solar irradiance. **It can optionally launch a user-chosen Windows `.ex
 
 ### Release status
 
-The scheduling engine tests have passed, but the v1 graphical layout and
-packaged Windows executable must still be verified on Windows before calling
-this a final release. Source mode and an executable build are not identical.
+The packaged v1.0 Windows executable has been built and opened successfully on Windows 11,
+and 27 automated tests passed. Live forecasts and scheduled Windows launches still
+depend on network access, local permissions, and the target computer.
+
+**Windows download:** [SunPilot AI v1.0](https://github.com/Mivq27/SunPilot-AI/releases/tag/v1.0).
 
 ## Quick start
 
@@ -83,9 +85,8 @@ triggered at startup.
 .\.venv\Scripts\python.exe -m pytest -q .\tests\test_live_planner.py .\tests\test_forecast_horizon.py .\tests\test_windows_scheduler.py
 ```
 
-23 planning and Windows scheduling tests passed during preparation. The graphical interface
-must be checked on Windows (especially wheel behavior and resizing): it could
-not be visually launched in the development environment used for this patch.
+The final v1.0 suite passed 27 automated tests on Windows 11. User-interface behavior
+and scheduled Windows launches should be smoke-tested on each target computer.
 
 ### Scheduling a Windows `.exe` (optional)
 
@@ -167,7 +168,7 @@ simulations; the saved aggregate benchmark remains for two-hour tasks only.
 
 ## Interface and accessibility
 
-The desktop UI has three pages: **Plan a task**, **Simulator** and **Results**.
+The desktop UI has four tabs: **Plan**, **Automate**, **Simulator** and **Research**.
 In Plan a task, location and advanced scientific controls are collapsed by
 initial default to keep the interface uncluttered. All fields still support
 keyboard input, and mouse-wheel movement over spinboxes, dates and dropdowns
