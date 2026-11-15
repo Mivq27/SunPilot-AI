@@ -1,7 +1,7 @@
-# SunPilot AI
+﻿# SunPilot AI
 
 **Track:** AI + Climate  
-**Team:** [Insert actual submitting member(s)]
+**Team:** Enrique Lamas
 
 ## The problem
 
@@ -32,3 +32,4 @@ Reconstruct archival operational forecasts available at each historical scheduli
 ## Sources and AI credits
 
 Open-Meteo historical ERA5 and Forecast APIs; Open-Meteo Previous Runs / Single Runs forecast archives (planned validation); Python, pandas, NumPy, scikit-learn, PySide6, Matplotlib, PyInstaller. **ChatGPT was used extensively for design, code generation, testing and technical documentation.** Source and reproducible tests: https://github.com/Mivq27/SunPilot-AI.
+
